@@ -54,6 +54,10 @@ public extension PanModalPresentable where Self: UIViewController {
     var dragIndicatorBackgroundColor: UIColor {
         return UIColor.lightGray
     }
+    
+    var dragIndicatorRoundedBackgroundColor: UIColor {
+        return .clear
+    }
 
     var scrollIndicatorInsets: UIEdgeInsets {
         let top = shouldRoundTopCorners ? cornerRadius : 0
@@ -95,6 +99,10 @@ public extension PanModalPresentable where Self: UIViewController {
 
     var showDragIndicator: Bool {
         return shouldRoundTopCorners
+    }
+    
+    var showDragIndicatorWithRoundCorners: Bool {
+        return false
     }
 
     func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {

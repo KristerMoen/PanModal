@@ -94,6 +94,8 @@ public protocol PanModalPresentable: AnyObject {
      Default Value is black with alpha component 0.7.
     */
     var panModalBackgroundColor: UIColor { get }
+    
+    var dragIndicatorRoundedBackgroundColor: UIColor { get }
 
     /**
      The drag indicator view color.
@@ -164,6 +166,15 @@ public protocol PanModalPresentable: AnyObject {
      Default value is true.
      */
     var shouldRoundTopCorners: Bool { get }
+    
+    /**
+     A flag to determine if the top corners should be rounded and
+     if a drag indicator should be shown
+     above the pan modal container view.
+
+     Default value is true.
+     */
+    var showDragIndicatorWithRoundCorners: Bool { get }
 
     /**
      A flag to determine if a drag indicator should be shown

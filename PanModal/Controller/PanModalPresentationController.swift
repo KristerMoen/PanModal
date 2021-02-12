@@ -138,6 +138,16 @@ open class PanModalPresentationController: UIPresentationController {
         view.layer.cornerRadius = Constants.dragIndicatorSize.height / 2.0
         return view
     }()
+    
+    
+    /**
+     Drag Indicator Background View
+     */
+    private lazy var dragIndicatorBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = presentable?.dragIndicatorRoundedBackgroundColor
+        return view
+    }()
 
     /**
      Override presented view to return the pan container wrapper
@@ -212,6 +222,7 @@ open class PanModalPresentationController: UIPresentationController {
          */
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.dragIndicatorView.alpha = 0.0
+            self?.dragIndicatorBackgroundView.alpha = 0.0
             self?.backgroundView.dimState = .off
             self?.presentingViewController.setNeedsStatusBarAppearanceUpdate()
         })
@@ -321,7 +332,6 @@ private extension PanModalPresentationController {
             && presentedView.frame.minY.rounded() <= anchoredYPosition.rounded() {
             return true
         }
-
         return false
     }
 
@@ -353,6 +363,10 @@ private extension PanModalPresentationController {
 
         if presentable.shouldRoundTopCorners {
             addRoundedCorners(to: presentedView)
+        }
+        
+        if presentable.showDragIndicatorWithRoundCorners {
+            addDragIndicatorWithRoundCornersView(to: presentedView)
         }
 
         setNeedsLayoutUpdate()
@@ -408,14 +422,54 @@ private extension PanModalPresentationController {
      Adds the drag indicator view to the view hierarchy
      & configures its layout constraints.
      */
+    
     func addDragIndicatorView(to view: UIView) {
         view.addSubview(dragIndicatorView)
         dragIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        dragIndicatorView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: -Constants.indicatorYOffset).isActive = true
+        dragIndicatorView.bottomAnchor.constraint(equalTo: view.topAnchor).isActive = true
         dragIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         dragIndicatorView.widthAnchor.constraint(equalToConstant: Constants.dragIndicatorSize.width).isActive = true
         dragIndicatorView.heightAnchor.constraint(equalToConstant: Constants.dragIndicatorSize.height).isActive = true
     }
+    
+    /**
+     Adds the drag indicator view to the view hierarchy
+     & configures its layout constraints.
+     */
+    
+    func addDragIndicatorWithRoundCornersView(to view: UIView) {
+        view.addSubview(dragIndicatorBackgroundView)
+        dragIndicatorBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        dragIndicatorBackgroundView.bottomAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        dragIndicatorBackgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        dragIndicatorBackgroundView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
+        dragIndicatorBackgroundView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        let radius = presentable?.cornerRadius ?? 0
+        let path = UIBezierPath(roundedRect: view.bounds,
+                                byRoundingCorners: [.topLeft, .topRight],
+                                cornerRadii: CGSize(width: radius, height: radius))
+
+        // Draw around the drag indicator view, if displayed
+        if presentable?.showDragIndicator == true {
+            let indicatorLeftEdgeXPos = view.bounds.width/2.0 - Constants.dragIndicatorSize.width/2.0
+            drawAroundDragIndicator(currentPath: path, indicatorLeftEdgeXPos: indicatorLeftEdgeXPos)
+        }
+
+        // Set path as a mask to display optional drag indicator view & rounded corners
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        dragIndicatorBackgroundView.layer.mask = mask
+
+        dragIndicatorBackgroundView.addSubview(dragIndicatorView)
+        dragIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        dragIndicatorView.centerYAnchor.constraint(equalTo: dragIndicatorBackgroundView.centerYAnchor).isActive = true
+        dragIndicatorView.centerXAnchor.constraint(equalTo: dragIndicatorBackgroundView.centerXAnchor).isActive = true
+        dragIndicatorView.widthAnchor.constraint(equalToConstant: Constants.dragIndicatorSize.width).isActive = true
+        dragIndicatorView.heightAnchor.constraint(equalToConstant: Constants.dragIndicatorSize.height).isActive = true
+    
+    }
+
 
     /**
      Calculates & stores the layout anchor points & options
