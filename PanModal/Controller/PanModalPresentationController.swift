@@ -443,7 +443,7 @@ private extension PanModalPresentationController {
         dragIndicatorBackgroundView.bottomAnchor.constraint(equalTo: view.topAnchor).isActive = true
         dragIndicatorBackgroundView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         dragIndicatorBackgroundView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-        dragIndicatorBackgroundView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        dragIndicatorBackgroundView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         
         let radius = presentable?.cornerRadius ?? 0
         let path = UIBezierPath(roundedRect: view.bounds,
